@@ -8,6 +8,7 @@ import {
   Paper,
   Center,
   Image,
+  Text,
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import ActivityCard from "../components/ActivityCard";
@@ -75,6 +76,9 @@ const ActivitiesPage: React.FC = () => {
             },
           }}
         />
+        <Text size="xs">Videos en el demo con transcript: </Text>
+        <Text size="xs">Protagonismo de Lp(a) e Hipertrigliceridemia en el riesgo cardiovascular.</Text>
+        <Text size="xs">Hipertiroidismo en embarazo: antitiroideo vs Cirugía</Text>
       </Paper>
 
       {loading ? (
