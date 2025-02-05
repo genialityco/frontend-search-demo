@@ -54,7 +54,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   searchQuery = "",
 }) => {
   const [loadingTranscript, setLoadingTranscript] = useState(false);
-  const [showTranscript, setShowTranscript] = useState(false);
   const navigate = useNavigate();
 
   const queryWords = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
@@ -93,15 +92,23 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
     );
 
     if (!isButtonClick && !isLinkClick && !isTimestampClick) {
-      navigate(`/activity/${activity._id}`, { state: activity });
+      navigate(`/activity/${activity._id}`, {
+        state: {
+          activity,
+          searchQuery,
+        },
+      });
     }
   };
 
   const handleTimestampClick = (e: React.MouseEvent, startSeconds: number) => {
     e.stopPropagation();
     navigate(`/activity/${activity._id}/${Math.floor(startSeconds)}`, {
-      state: activity,
-    }); 
+      state: {
+        activity,
+        searchQuery,
+      },
+    });
   };
 
   return (
@@ -110,7 +117,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
       padding="md"
       radius="md"
       withBorder
-      onClick={handleCardClick}
       style={{ position: "relative", cursor: "pointer" }}
     >
       <Grid gutter="md" align="center">
@@ -142,8 +148,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               <Button
                 variant="light"
                 component="a"
-                href={activity.video || "#"}
-                target="_blank"
+                onClick={handleCardClick}
                 disabled={!activity.video}
               >
                 {activity.video ? "Ver video completo" : "No disponible"}
@@ -155,13 +160,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                 loading={loadingTranscript}
               >
                 Generar Transcripción
-              </Button>
-
-              <Button
-                variant="default"
-                onClick={() => setShowTranscript(!showTranscript)}
-              >
-                {showTranscript ? "Cerrar Transcripción" : "Ver Transcripción"}
               </Button>
             </Group>
 

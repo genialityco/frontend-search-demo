@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -16,19 +17,27 @@ import { fetchActivities, fetchSearchActivities } from "../services/api";
 import { Activity } from "../types";
 
 const ActivitiesPage: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSearchQuery = searchParams.get("query") || "";
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
 
   const limit = 8;
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
-  };
+  // ✅ Mantener la búsqueda en la URL cuando cambia el usuario escribe o cambia de página
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("query", searchQuery);
+    if (currentPage !== 1) params.set("page", String(currentPage));
 
+    setSearchParams(params);
+  }, [searchQuery, currentPage]);
+
+  // ✅ Buscar actividades con debounce
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -67,7 +76,10 @@ const ActivitiesPage: React.FC = () => {
           placeholder="Buscar actividades..."
           leftSection={<IconSearch size={18} />}
           value={searchQuery}
-          onChange={handleSearch}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentPage(1); // Reiniciar a la página 1 en una nueva búsqueda
+          }}
           size="md"
           radius="md"
           styles={{
